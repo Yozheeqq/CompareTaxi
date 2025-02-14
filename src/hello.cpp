@@ -25,7 +25,7 @@ public:
 
 std::string SayHelloTo(std::string_view name) {
   if (name.empty()) {
-    name = "unknown user";
+    name = "unknown user!";
   }
 
   return fmt::format("You are awesome, {}!\n", name);
