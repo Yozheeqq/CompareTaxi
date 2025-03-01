@@ -5,6 +5,7 @@
 #include <userver/server/handlers/tests_control.hpp>
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
+#include <userver/kafka/producer_component.hpp>
 
 #include "handlers.h"
 
@@ -21,6 +22,7 @@ int main(int argc, char* argv[]) {
       .Append<taxi_compare::TGetConfigHandler>()
       .Append<taxi_compare::TSetPriceInfoHandler>()
       .Append<taxi_compare::TSetUserInfoHandler>()
+      .Append<kafka::ProducerComponent>("kafka-producer")
     ;
 
   return userver::utils::DaemonMain(argc, argv, component_list);
