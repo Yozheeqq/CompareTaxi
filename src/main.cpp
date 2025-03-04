@@ -5,6 +5,10 @@
 #include <userver/server/handlers/tests_control.hpp>
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
+#include <userver/kafka/producer_component.hpp>
+
+#include <userver/storages/secdist/component.hpp>
+#include <userver/storages/secdist/provider_component.hpp>
 
 #include "handlers.h"
 
@@ -14,6 +18,8 @@ int main(int argc, char* argv[]) {
       .Append<userver::server::handlers::Ping>()
       .Append<userver::components::TestsuiteSupport>()
       .Append<userver::components::HttpClient>()
+      .Append<userver::components::Secdist>()
+      .Append<components::DefaultSecdistProvider>()
       .Append<userver::clients::dns::Component>()
       .Append<userver::server::handlers::TestsControl>()
       .Append<taxi_compare::TGetPricePredictHandler>()
@@ -21,6 +27,7 @@ int main(int argc, char* argv[]) {
       .Append<taxi_compare::TGetConfigHandler>()
       .Append<taxi_compare::TSetPriceInfoHandler>()
       .Append<taxi_compare::TSetUserInfoHandler>()
+      .Append<kafka::ProducerComponent>("kafka-producer")
     ;
 
   return userver::utils::DaemonMain(argc, argv, component_list);

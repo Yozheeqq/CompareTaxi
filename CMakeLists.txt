@@ -4,7 +4,7 @@ project(taxi_compare CXX)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(DownloadUserver)
 
-find_package(userver COMPONENTS core QUIET)
+find_package(userver COMPONENTS core kafka QUIET)
 if(NOT userver_FOUND)
   # Tries TRY_DIR first, falls back to downloading userver from GitHub using CPM.
   download_userver(TRY_DIR third_party/userver)
@@ -23,24 +23,11 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/handlers.h
 )
 target_include_directories(${PROJECT_NAME}_objs PUBLIC ${CMAKE_SOURCE_DIR}/lib)
-target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::core)
-
+target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::core userver::kafka)
 
 # The Service
 add_executable(${PROJECT_NAME} src/main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_objs)
-
-
-# Unit Tests
-add_executable(${PROJECT_NAME}_unittest
-    # src/hello_test.cpp
-)
-target_link_libraries(${PROJECT_NAME}_unittest PRIVATE ${PROJECT_NAME}_objs userver::utest)
-add_google_tests(${PROJECT_NAME}_unittest)
-
-
-# Functional testing
-userver_testsuite_add_simple()
 
 # Install
 include(GNUInstallDirs)
@@ -48,7 +35,7 @@ include(GNUInstallDirs)
 if(DEFINED ENV{PREFIX})
   message(STATUS "Set install prefix: $ENV{PREFIX}")
   file(TO_CMAKE_PATH "$ENV{PREFIX}" PREFIX_PATH)
-  set(CMAKE_INSTALL_PREFIX "${PREFIX_PATH}")
+  set(CMAKE_INSTALL_PREFIX ${PREFIX_PATH})
 endif()
 
 file(GLOB CONFIGS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/configs/*.yaml ${CMAKE_CURRENT_SOURCE_DIR}/configs/*.json)

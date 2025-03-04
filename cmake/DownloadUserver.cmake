@@ -29,11 +29,13 @@ function(download_userver)
     set(CPM_USE_NAMED_CACHE_DIRECTORIES ON)
   endif()
 
+  set(USERVER_FEATURE_KAFKA ON CACHE BOOL "Enable Kafka in userver")
   CPMAddPackage(
       NAME userver
       GITHUB_REPOSITORY userver-framework/userver
       VERSION ${ARG_VERSION}
       GIT_TAG ${ARG_GIT_TAG}
+      OPTIONS "USERVER_FEATURE_KAFKA ON"
       ${ARG_UNPARSED_ARGUMENTS}
   )
 endfunction()
