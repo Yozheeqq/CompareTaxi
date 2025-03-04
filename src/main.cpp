@@ -7,6 +7,9 @@
 #include <userver/utils/daemon_run.hpp>
 #include <userver/kafka/producer_component.hpp>
 
+#include <userver/storages/secdist/component.hpp>
+#include <userver/storages/secdist/provider_component.hpp>
+
 #include "handlers.h"
 
 int main(int argc, char* argv[]) {
@@ -15,6 +18,8 @@ int main(int argc, char* argv[]) {
       .Append<userver::server::handlers::Ping>()
       .Append<userver::components::TestsuiteSupport>()
       .Append<userver::components::HttpClient>()
+      .Append<userver::components::Secdist>()
+      .Append<components::DefaultSecdistProvider>()
       .Append<userver::clients::dns::Component>()
       .Append<userver::server::handlers::TestsControl>()
       .Append<taxi_compare::TGetPricePredictHandler>()

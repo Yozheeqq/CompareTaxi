@@ -7,9 +7,25 @@ components_manager:
         fs-task-processor:            # Make a separate task processor for filesystem bound tasks.
             worker_threads: $worker-fs-threads
 
+
+        producer-task-processor:  # Task processor for handling message delivery reports
+            thread_name: producer
+            worker_threads: $worker-threads     # Threads are shared between all producers in program
+
     default_task_processor: main-task-processor
 
     components:                       # Configuring components that were registered via component_list
+        kafka-producer:                   # Kafka producer component name must start with kafka-producer
+            delivery_timeout: 10s         # Timeout for message delivery
+            queue_buffering_max: 100ms    # Time, producer waits before sending a message
+            enable_idempotence: true      # Whether to enable idempotence mode
+            security_protocol: PLAINTEXT  # Broker connection settings
+
+        default-secdist-provider:                        # Component that loads configuration of hosts and passwords
+            config: /etc/kafka/secure_data/secure_data.json  # Values are supposed to be stored in this file
+            missing-ok: true                             # ... but if the file is missing it is still ok
+            # environment-secrets-key: SECDIST_CONFIG      # ... values will be loaded from this environment value
+
         server:
             listener:                 # configuring the main listening socket...
                 port: $server-port            # ...to listen on this port and...
@@ -56,21 +72,21 @@ components_manager:
             task_processor: main-task-processor
 
         handler-get-user-info:
-            path: /get-price-predict
+            path: /get-user-info
             method: GET
             task_processor: main-task-processor
 
         handler-get-config:
-            path: /get-price-predict
+            path: /get-config
             method: GET
             task_processor: main-task-processor
 
         handler-set-price-info:
-            path: /get-price-predict
+            path: /set-price-info
             method: POST
             task_processor: main-task-processor
 
         handler-set-user-info:
-            path: /get-price-predict
+            path: /set-user-info
             method: POST
             task_processor: main-task-processor

@@ -30,6 +30,33 @@ can also be `debug-custom`, `release-custom`.
 * `make docker-clean-data` - stop docker containers
 
 
+## Как запустить проект
+
+1) Необходимо склонировать проект через `git clone https://github.com/Yozheeqq/CompareTaxi.git`
+2) Перейти в директорию CompareTaxi
+3) Запустить команду `make build-release`. Она установит все необходимые файлы
+4) Далее необоходимо установить кафку.
+```sh
+wget -c https://dlcdn.apache.org/kafka/3.9.0/kafka_2.13-3.9.0.tgz
+tar -xzf kafka_2.13-3.9.0.tgz
+mv kafka_2.13-3.9.0.tgz /etc/kafka
+```
+5) Потом надо создать файл secdist.json. Внутри примерно так:
+```json
+{
+    "kafka_settings": {
+        "kafka-producer": {
+            "bootstrap.servers": "localhost:9092",
+            "username": "",
+            "password": "",
+            "security.protocol": "PLAINTEXT"
+        }
+    }
+}
+```
+6) Путь до этого файла указать в default-secdist-provider:config
+7) Запустить сервис `cd ~/CompareTaxi & ./build-release/taxi_compare -c configs/static_config.yaml --config_vars configs/config_vars.yaml`
+
 ## License
 
 The original template is distributed under the [Apache-2.0 License](https://github.com/userver-framework/userver/blob/develop/LICENSE)
