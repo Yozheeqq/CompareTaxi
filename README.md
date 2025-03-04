@@ -41,6 +41,15 @@ wget -c https://dlcdn.apache.org/kafka/3.9.0/kafka_2.13-3.9.0.tgz
 tar -xzf kafka_2.13-3.9.0.tgz
 mv kafka_2.13-3.9.0.tgz /etc/kafka
 ```
+5) Для запуска команд кафки из консоли необходимо установить java.
+```sh
+sudo apt update && sudo apt install -y openjdk-11-jre
+java -version
+# readlink -f $(which java)
+# /usr/lib/jvm/java-11-openjdk-amd64/bin/java
+echo 'export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64' >> ~/.bashrc
+source ~/.bashrc
+```
 5) Потом надо создать файл secdist.json. Внутри примерно так:
 ```json
 {
@@ -56,6 +65,15 @@ mv kafka_2.13-3.9.0.tgz /etc/kafka
 ```
 6) Путь до этого файла указать в default-secdist-provider:config
 7) Запустить сервис `cd ~/CompareTaxi & ./build-release/taxi_compare -c configs/static_config.yaml --config_vars configs/config_vars.yaml`
+8) Можно проверить и отправить курл запрос:
+```
+curl -X POST -i --data '{"topic": "test-topic", "key": "key", "payload": "my message"}' localhost:8080/s
+et-price-info
+```
+9) Потом можно вручную прочитать топик
+```
+./etc/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic --from-beginning
+```
 
 ## License
 
