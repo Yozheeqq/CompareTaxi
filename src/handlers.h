@@ -1,5 +1,6 @@
 #pragma once
 
+#include <userver/kafka/consumer_scope.hpp>
 #include <userver/kafka/producer.hpp>
 #include <userver/server/handlers/http_handler_base.hpp>
 #include <userver/server/handlers/http_handler_json_base.hpp>
@@ -74,6 +75,21 @@ private:
 
 private:
     const kafka::Producer& Producer;
+};
+
+class TConsumerHandler final : public components::ComponentBase {
+public:
+    static constexpr std::string_view kName{"consumer-handler"};
+
+    TConsumerHandler(const components::ComponentConfig& config, const components::ComponentContext& context);
+
+private:
+
+    void Consume(kafka::MessageBatchView messages) const;
+
+private:
+    // Subscriptions must be the last fields! Add new fields above this comment.
+    kafka::ConsumerScope Consumer;
 };
 
 class TSetUserInfoHandler final : public userver::server::handlers::HttpHandlerBase {

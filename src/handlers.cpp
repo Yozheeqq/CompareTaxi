@@ -1,8 +1,11 @@
 #include "handlers.h"
 
+#include <userver/kafka/consumer_component.hpp>
 #include <userver/kafka/producer_component.hpp>
 #include <userver/components/component_config.hpp>
 #include <userver/components/component_context.hpp>
+
+#include <iostream>
 
 namespace taxi_compare {
 
@@ -46,6 +49,7 @@ TSetPriceInfoHandler::TSetPriceInfoHandler(
 SendStatus TSetPriceInfoHandler::Produce(const RequestMessage& message) const {
     try {
         Producer.Send(message.topic, message.key, message.payload);
+        LOG_INFO() << "YOZHEEQ: Message sent successfully\n";
         return SendStatus::kSuccess;
     } catch (const kafka::SendException& ex) {
         return ex.IsRetryable() ? SendStatus::kErrorRetryable : SendStatus::kErrorNonRetryable;
@@ -78,6 +82,25 @@ formats::json::Value TSetPriceInfoHandler::HandleRequestJsonThrow(
             return formats::json::MakeObject("error", "Bad request");
     }
     UINVARIANT(false, "Unknown produce status");
+}
+
+TConsumerHandler::TConsumerHandler(const components::ComponentConfig& config, const components::ComponentContext& context)
+    : components::ComponentBase{config, context},
+    Consumer{context.FindComponent<kafka::ConsumerComponent>().GetConsumer()} {
+    Consumer.Start([this](kafka::MessageBatchView messages) {
+        Consume(messages);
+        Consumer.AsyncCommit();
+    });
+}
+
+void TConsumerHandler::Consume(kafka::MessageBatchView messages) const {
+    for (const auto& message : messages) {
+        if (!message.GetTimestamp().has_value()) {
+            continue;
+        }
+
+        std::cerr << "YOZHEEQ: Message=" << message.GetPayload();
+    }
 }
 
 std::string TSetUserInfoHandler::HandleRequestThrow(

@@ -6,6 +6,7 @@
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
 #include <userver/kafka/producer_component.hpp>
+#include <userver/kafka/consumer_component.hpp>
 
 #include <userver/storages/secdist/component.hpp>
 #include <userver/storages/secdist/provider_component.hpp>
@@ -28,6 +29,8 @@ int main(int argc, char* argv[]) {
       .Append<taxi_compare::TSetPriceInfoHandler>()
       .Append<taxi_compare::TSetUserInfoHandler>()
       .Append<kafka::ProducerComponent>("kafka-producer")
+      .Append<kafka::ConsumerComponent>("kafka-consumer")
+      .Append<taxi_compare::TConsumerHandler>()
     ;
 
   return userver::utils::DaemonMain(argc, argv, component_list);
