@@ -20,7 +20,7 @@ $(addsuffix /CMakeCache.txt, $(addprefix build-, $(PRESETS))): build-%/CMakeCach
 # Build using cmake
 .PHONY: $(addprefix build-, $(PRESETS))
 $(addprefix build-, $(PRESETS)): build-%: build-%/CMakeCache.txt
-	cmake --build build-$* -j $(NPROCS) --target $(PROJECT_NAME)
+	cmake --build build-$* -j $(NPROCS)
 
 # Test
 .PHONY: $(addprefix test-, $(PRESETS))

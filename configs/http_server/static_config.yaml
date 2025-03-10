@@ -7,12 +7,6 @@ components_manager:
         fs-task-processor:            # Make a separate task processor for filesystem bound tasks.
             worker_threads: $worker-fs-threads
 
-        consumer-task-processor:  # Task processor for listenting messages from topics
-            thread_name: consumer
-            worker_threads: 1
-        consumer-blocking-task-processor: # Task processor for blocking consumer operations
-            thread_name: consumer-blocking
-            worker_threads: 1
         producer-task-processor:  # Task processor for handling message delivery reports
             thread_name: producer
             worker_threads: $worker-threads     # Threads are shared between all producers in program
@@ -20,17 +14,6 @@ components_manager:
     default_task_processor: main-task-processor
 
     components:                       # Configuring components that were registered via component_list
-        consumer-handler:
-
-        # /// [Kafka service sample - consumer static config]
-        # yaml
-        kafka-consumer:                  # Kafka consumer component name must start with kafka-consumer
-            group_id: test-group         # Consumers group current consumer will join on start
-            topics:                      # List of topics consumer starts to listen
-              - test-topic
-            auto_offset_reset: smallest  # Strategy for reading topics without committed offsets
-            max_batch_size: 5            # Number of messages consumers waits until user-callback is called
-            security_protocol: PLAINTEXT # Broker connection settings
 
         kafka-producer:                   # Kafka producer component name must start with kafka-producer
             delivery_timeout: 10s         # Timeout for message delivery
@@ -61,8 +44,6 @@ components_manager:
             # See userver "dynamic config" docs for what configs exist.
             defaults:
                 HTTP_CLIENT_CONNECTION_POOL_SIZE: 1000
-
-        testsuite-support: {}
 
         http-client:
             load-enabled: $is_testing

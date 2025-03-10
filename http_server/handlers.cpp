@@ -84,25 +84,6 @@ formats::json::Value TSetPriceInfoHandler::HandleRequestJsonThrow(
     UINVARIANT(false, "Unknown produce status");
 }
 
-TConsumerHandler::TConsumerHandler(const components::ComponentConfig& config, const components::ComponentContext& context)
-    : components::ComponentBase{config, context},
-    Consumer{context.FindComponent<kafka::ConsumerComponent>().GetConsumer()} {
-    Consumer.Start([this](kafka::MessageBatchView messages) {
-        Consume(messages);
-        Consumer.AsyncCommit();
-    });
-}
-
-void TConsumerHandler::Consume(kafka::MessageBatchView messages) const {
-    for (const auto& message : messages) {
-        if (!message.GetTimestamp().has_value()) {
-            continue;
-        }
-
-        std::cerr << "YOZHEEQ: Message=" << message.GetPayload();
-    }
-}
-
 std::string TSetUserInfoHandler::HandleRequestThrow(
     const userver::server::http::HttpRequest&,
     userver::server::request::RequestContext&
