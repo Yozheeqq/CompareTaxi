@@ -64,16 +64,20 @@ source ~/.bashrc
 }
 ```
 6) Путь до этого файла указать в default-secdist-provider:config
-7) Запустить сервис `cd ~/CompareTaxi & ./build-release/taxi_compare -c configs/static_config.yaml --config_vars configs/config_vars.yaml`
-8) Можно проверить и отправить курл запрос:
+7) Запустить http-server
+```sh
+cd ~/CompareTaxi
+./build-release/http_server -c configs/http_server/static_config.yaml --config_vars configs/common/config_vars.yaml
 ```
-curl -X POST -i --data '{"topic": "test-topic", "key": "key", "payload": "my message"}' localhost:8080/s
-et-price-info
+8) Запустить ноды
+```sh
+./build-release/node -c configs/nodes/static_config.yaml --config_vars configs/common/config_vars.yaml
 ```
-9) Потом можно вручную прочитать топик
+9) Можно проверить и отправить курл запрос:
 ```
-./etc/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic --from-beginning
+curl -X POST -i --data '{"topic": "test-topic", "key": "key", "payload": "my message"}' localhost:8080/set-price-info
 ```
+9) Потом можно пойти в логи и увидеть, что все хорошо
 
 ## License
 
