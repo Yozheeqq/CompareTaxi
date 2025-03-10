@@ -15,19 +15,25 @@ userver_setup_environment()
 
 # Common sources
 add_library(${PROJECT_NAME}_objs OBJECT
+    http_server/handlers.cpp
+    http_server/handlers.h
     lib/common_types.cpp
     lib/common_types.h
     lib/model.cpp
     lib/model.h
-    src/handlers.cpp
-    src/handlers.h
+    nodes/profile_updater.cpp
+    nodes/profile_updater.h
 )
 target_include_directories(${PROJECT_NAME}_objs PUBLIC ${CMAKE_SOURCE_DIR}/lib)
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::core userver::kafka)
 
 # The Service
-add_executable(${PROJECT_NAME} src/main.cpp)
-target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_objs)
+add_executable(http_server http_server/main.cpp)
+target_link_libraries(http_server PRIVATE ${PROJECT_NAME}_objs)
+
+# The Nodes Service
+add_executable(node nodes/main.cpp)
+target_link_libraries(node PRIVATE ${PROJECT_NAME}_objs)
 
 # Install
 include(GNUInstallDirs)
@@ -40,5 +46,6 @@ endif()
 
 file(GLOB CONFIGS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/configs/*.yaml ${CMAKE_CURRENT_SOURCE_DIR}/configs/*.json)
 
-install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT ${PROJECT_NAME})
+install(TARGETS http_server DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT ${PROJECT_NAME})
+install(TARGETS node DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT ${PROJECT_NAME})
 install(FILES ${CONFIGS_FILES} DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/${PROJECT_NAME} COMPONENT ${PROJECT_NAME})

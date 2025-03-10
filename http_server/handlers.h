@@ -77,21 +77,6 @@ private:
     const kafka::Producer& Producer;
 };
 
-class TConsumerHandler final : public components::ComponentBase {
-public:
-    static constexpr std::string_view kName{"consumer-handler"};
-
-    TConsumerHandler(const components::ComponentConfig& config, const components::ComponentContext& context);
-
-private:
-
-    void Consume(kafka::MessageBatchView messages) const;
-
-private:
-    // Subscriptions must be the last fields! Add new fields above this comment.
-    kafka::ConsumerScope Consumer;
-};
-
 class TSetUserInfoHandler final : public userver::server::handlers::HttpHandlerBase {
 public:
     static constexpr std::string_view kName = "handler-set-user-info";
