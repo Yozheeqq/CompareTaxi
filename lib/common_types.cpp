@@ -14,4 +14,31 @@ EWeatherType StringToWeatherType(const std::string& weatherStr) {
     }
 }
 
+template<>
+TString ValidateStruct<TUserInfo>(const formats::json::Value& json, ERequestType type) {
+    [[maybe_unused]] TUserInfo userInfo;
+    userInfo.PhoneId = json["phone_id"].As<TString>();
+    if (type == ERequestType::Post) {
+        userInfo.StartAddress = json["start_address"].As<TString>();
+        userInfo.EndAddress = json["end_address"].As<TString>();
+        userInfo.Timestamp = json["timestamp"].As<ui64>();
+    }
+    return "";
+}
+
+template<>
+TString ValidateStruct<TTaxiInfo>(const formats::json::Value& json, ERequestType type) {
+    [[maybe_unused]] TTaxiInfo taxiInfo;
+    taxiInfo.StartPointX = json["start_point_x"].As<double>();
+    taxiInfo.StartPointY = json["start_point_y"].As<double>();
+    taxiInfo.EndPointX = json["end_point_x"].As<double>();
+    taxiInfo.EndPointY = json["end_point_y"].As<double>();
+    taxiInfo.Timestamp = json["timestamp"].As<ui64>();
+    taxiInfo.Distance = json["distance"].As<double>();
+    if (type == ERequestType::Post) {
+        taxiInfo.Price = json["price"].As<ui64>();
+    }
+    return "";
+}
+
 } // taxi_compare

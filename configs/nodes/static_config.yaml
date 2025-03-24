@@ -24,7 +24,7 @@ components_manager:
         kafka-consumer-profile-updater:  # Kafka consumer component name must start with kafka-consumer
             group_id: test-group         # Consumers group current consumer will join on start
             topics:                      # List of topics consumer starts to listen
-              - test-topic
+              - user-info
             auto_offset_reset: smallest  # Strategy for reading topics without committed offsets
             max_batch_size: 5            # Number of messages consumers waits until user-callback is called
             security_protocol: PLAINTEXT # Broker connection settings
