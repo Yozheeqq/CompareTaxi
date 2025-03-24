@@ -19,6 +19,8 @@ add_library(${PROJECT_NAME}_objs OBJECT
     http_server/handlers.h
     lib/common_types.cpp
     lib/common_types.h
+    lib/kafka_helpers.h
+    lib/kafka_helpers.cpp
     lib/model.cpp
     lib/model.h
     nodes/profile_updater.cpp
