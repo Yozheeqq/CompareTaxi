@@ -11,6 +11,8 @@
 #include <userver/storages/secdist/component.hpp>
 #include <userver/storages/secdist/provider_component.hpp>
 
+#include <userver/ydb/component.hpp>
+
 #include "profile_updater.h"
 
 int main(int argc, char* argv[]) {
@@ -24,6 +26,7 @@ int main(int argc, char* argv[]) {
       .Append<userver::server::handlers::TestsControl>()
       .Append<kafka::ConsumerComponent>("kafka-consumer-profile-updater")
       .Append<taxi_compare::TConsumerHandler>()
+      .Append<ydb::YdbComponent>();
     ;
 
   return userver::utils::DaemonMain(argc, argv, component_list);

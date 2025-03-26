@@ -71,3 +71,14 @@ components_manager:
             task_processor: main-task-processor
             throttling_enabled: false
             url_trailing_slash: strict-match
+
+        ydb:
+            operation-settings:
+                cancel-after: 10000ms
+                client-timeout: 11000ms
+                operation-timeout: 10000ms
+                retries: 3
+            databases:
+                compare-taxi:
+                    endpoint: grpcs://ydb.serverless.yandexcloud.net:2135
+                    database: /ru-central1/b1ga1h9drl5fbm4b57t7/etnh7u20t3d3stro1ppb

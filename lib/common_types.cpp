@@ -41,4 +41,12 @@ TString ValidateStruct<TTaxiInfo>(const formats::json::Value& json, ERequestType
     return "";
 }
 
+template<>
+TString ValidateStruct<TParserInfo>(const formats::json::Value& json, [[maybe_unused]] ERequestType type) {
+    [[maybe_unused]] TParserInfo parserInfo;
+    parserInfo.Type = json["type"].As<TString>();
+    parserInfo.Name = json["name"].As<TString>();
+    return "";
+}
+
 } // taxi_compare

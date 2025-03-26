@@ -30,12 +30,16 @@ function(download_userver)
   endif()
 
   set(USERVER_FEATURE_KAFKA ON CACHE BOOL "Enable Kafka in userver")
+  set(USERVER_FEATURE_YDB ON CACHE BOOL "Enable YDB in userver")
+  set(USERVER_FEATURE_GRPC ON CACHE BOOL "Enable Grpc in userver")
   CPMAddPackage(
       NAME userver
       GITHUB_REPOSITORY userver-framework/userver
       VERSION ${ARG_VERSION}
       GIT_TAG ${ARG_GIT_TAG}
       OPTIONS "USERVER_FEATURE_KAFKA ON"
+      OPTIONS "USERVER_FEATURE_YDB ON"
+      OPTIONS "USERVER_FEATURE_GRPC ON"
       ${ARG_UNPARSED_ARGUMENTS}
   )
 endfunction()
