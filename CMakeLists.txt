@@ -1,3 +1,7 @@
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_C_COMPILER "clang")
+set(CMAKE_CXX_COMPILER "clang++")
+
 cmake_minimum_required(VERSION 3.12...3.31)
 project(taxi_compare CXX)
 
@@ -27,7 +31,7 @@ add_library(${PROJECT_NAME}_objs OBJECT
     nodes/profile_updater.h
 )
 target_include_directories(${PROJECT_NAME}_objs PUBLIC ${CMAKE_SOURCE_DIR}/lib)
-target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::core userver::kafka)
+target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::core userver::kafka userver-ydb)
 
 # The Service
 add_executable(http_server http_server/main.cpp)

@@ -40,16 +40,24 @@ public:
     ) const override;
 };
 
-class TGetConfigHandler final : public userver::server::handlers::HttpHandlerBase {
+class TGetConfigHandler final : public userver::server::handlers::HttpHandlerJsonBase {
 public:
     static constexpr std::string_view kName = "handler-get-config";
 
-    using HttpHandlerBase::HttpHandlerBase;
+    TGetConfigHandler(
+        const components::ComponentConfig& config,
+        const components::ComponentContext& context
+    ) : server::handlers::HttpHandlerJsonBase{config, context}
+    { }
 
-    std::string HandleRequestThrow(
-        const userver::server::http::HttpRequest &request,
-        userver::server::request::RequestContext &
+    formats::json::Value HandleRequestJsonThrow(
+        const server::http::HttpRequest& request,
+        const formats::json::Value& requestJson,
+        server::request::RequestContext& context
     ) const override;
+
+    TString GetCurrentDirPath() const;
+    TString GetFullConfigPath(const TString& type, const TString& name) const;
 };
 
 template <typename TStructType>

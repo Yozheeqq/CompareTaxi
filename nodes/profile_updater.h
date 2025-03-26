@@ -7,6 +7,8 @@
 #include <userver/formats/json/inline.hpp>
 #include <userver/formats/json/value.hpp>
 
+#include <userver/ydb/component.hpp>
+
 using namespace userver;
 
 namespace taxi_compare {
@@ -18,10 +20,11 @@ public:
     TConsumerHandler(const components::ComponentConfig& config, const components::ComponentContext& context);
 
 private:
-
     void Consume(kafka::MessageBatchView messages) const;
+    ydb::TableClient& Ydb() const { return *ydb_client_; }
 
 private:
+    std::shared_ptr<ydb::TableClient> ydb_client_;
     // Subscriptions must be the last fields! Add new fields above this comment.
     kafka::ConsumerScope Consumer;
 };

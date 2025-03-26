@@ -44,6 +44,11 @@ struct TTaxiInfo {
     ui64 Price;
 };
 
+struct TParserInfo {
+    TString Type;
+    TString Name;
+};
+
 EWeatherType StringToWeatherType(const std::string& weatherStr);
 
 template<typename T>

@@ -5,6 +5,11 @@ DOCKER_IMAGE ?= ghcr.io/userver-framework/ubuntu-24.04-userver:latest
 # If we're under TTY, pass "-it" to "docker run"
 DOCKER_ARGS = $(shell /bin/test -t 0 && /bin/echo -it || echo)
 PRESETS ?= debug release debug-custom release-custom
+CC = clang
+CXX = clang++
+
+export CC
+export CXX
 
 .PHONY: all
 all: test-debug test-release
