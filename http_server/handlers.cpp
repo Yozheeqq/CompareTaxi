@@ -7,20 +7,20 @@
 
 namespace taxi_compare {
 
-std::string TGetPricePredictHandler::HandleRequestThrow(
-    const userver::server::http::HttpRequest& request,
-    userver::server::request::RequestContext&
+TGetPricePredictHandler::TGetPricePredictHandler(
+    const components::ComponentConfig& config,
+    const components::ComponentContext& context
+) : server::handlers::HttpHandlerJsonBase{config, context}
+  , Model("models/model.onnx")
+{ }
+
+formats::json::Value TGetPricePredictHandler::HandleRequestJsonThrow(
+    [[maybe_unused]] const server::http::HttpRequest& request,
+    [[maybe_unused]] const formats::json::Value& requestJson,
+    [[maybe_unused]] server::request::RequestContext& context
 ) const {
-    const auto priceInfo = TPriceInfo {
-        std::stod(request.GetArg("start_point_x")),
-        std::stod(request.GetArg("start_point_y")),
-        std::stod(request.GetArg("end_point_x")),
-        std::stod(request.GetArg("end_point_y")),
-        static_cast<ui64>(std::stoi(request.GetArg("timestamp"))),
-        StringToWeatherType(request.GetArg("weather")),
-        std::stod(request.GetArg("distance"))
-    };
-    return std::to_string(TModel::GetPricePredict(priceInfo));
+    const auto predict = Model.GetPricePredict(TTaxiInfo{});
+    return formats::json::MakeObject("Predict price", predict);
 };
 
 std::string TGetUserInfoHandler::HandleRequestThrow(
@@ -31,8 +31,8 @@ std::string TGetUserInfoHandler::HandleRequestThrow(
 };
 
 formats::json::Value TGetConfigHandler::HandleRequestJsonThrow(
-    [[maybe_unused]] const server::http::HttpRequest& request,
-    [[maybe_unused]] const formats::json::Value& requestJson,
+    const server::http::HttpRequest& request,
+    const formats::json::Value& requestJson,
     [[maybe_unused]] server::request::RequestContext& context
 ) const {
     const auto& errorMessage = ValidateJsonRequest<TParserInfo>(requestJson, ERequestType::Get);

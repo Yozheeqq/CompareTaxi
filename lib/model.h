@@ -2,22 +2,33 @@
 
 #include "common_types.h"
 
-namespace taxi_compare {
+#include <cpu_provider_factory.h>
+#include <onnxruntime_cxx_api.h>
 
-struct TPriceInfo {
-    double StartPointX;
-    double StartPointY;
-    double EndPointX;
-    double EndPointY;
-    ui64 Timestamp;
-    EWeatherType Weather;
-    double Distance;
-};
+namespace taxi_compare {
 
 class TModel {
 public:
 
-    static ui64 GetPricePredict(const TPriceInfo& priceInfo);
+    TModel(const TString& pathToModel);
+
+    ui64 GetPricePredict(const TTaxiInfo& priceInfo) const;
+
+private:
+
+    static Ort::Env& GetEnv() {
+        static Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "ONNXModel");
+        return env;
+    }
+
+    std::vector<float> GetInputFeatures(const TTaxiInfo& priceInfo) const;
+
+private:
+
+    mutable Ort::Session Session;
+    mutable std::mutex SessionMutex;
+    std::vector<std::string> InputNames;
+    std::vector<std::string> OutputNames;
 };
 
 } // taxi_compare
