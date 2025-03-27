@@ -16,16 +16,23 @@ using namespace userver;
 
 namespace taxi_compare {
 
-class TGetPricePredictHandler final : public userver::server::handlers::HttpHandlerBase {
+class TGetPricePredictHandler final : public userver::server::handlers::HttpHandlerJsonBase {
 public:
     static constexpr std::string_view kName = "handler-get-price-predict";
 
-    using HttpHandlerBase::HttpHandlerBase;
+    TGetPricePredictHandler(
+        const components::ComponentConfig& config,
+        const components::ComponentContext& context
+    );
 
-    std::string HandleRequestThrow(
-        const userver::server::http::HttpRequest &request,
-        userver::server::request::RequestContext &
+    formats::json::Value HandleRequestJsonThrow(
+        const server::http::HttpRequest& request,
+        const formats::json::Value& requestJson,
+        server::request::RequestContext& context
     ) const override;
+
+private:
+    TModel Model;
 };
 
 class TGetUserInfoHandler final : public userver::server::handlers::HttpHandlerBase {
