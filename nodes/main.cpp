@@ -11,8 +11,6 @@
 #include <userver/storages/secdist/component.hpp>
 #include <userver/storages/secdist/provider_component.hpp>
 
-#include <userver/ydb/component.hpp>
-
 #include <userver/storages/postgres/component.hpp>
 
 #include "profile_updater.h"

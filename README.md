@@ -34,34 +34,30 @@ can also be `debug-custom`, `release-custom`.
 
 1) Необходимо склонировать проект через `git clone https://github.com/Yozheeqq/CompareTaxi.git`
 2) Перейти в директорию CompareTaxi
-3) Запустить команду `make build-release`. Она установит все необходимые файлы
-4) Далее необоходимо установить кафку.
-```sh
-wget -c https://dlcdn.apache.org/kafka/3.9.0/kafka_2.13-3.9.0.tgz
-tar -xzf kafka_2.13-3.9.0.tgz
-mv kafka_2.13-3.9.0.tgz /etc/kafka
-```
-5) Для запуска команд кафки из консоли необходимо установить java.
-```sh
-sudo apt update && sudo apt install -y openjdk-11-jre
-java -version
-# readlink -f $(which java)
-# /usr/lib/jvm/java-11-openjdk-amd64/bin/java
-echo 'export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64' >> ~/.bashrc
-source ~/.bashrc
-```
+3) Запустить скрипт `sudo ./setup.sh`. Он установит все необходимые пакеты
+4) Запустить команду `make build-release`. Она соберет весь проект
 5) Потом надо создать файл secdist.json. Внутри примерно так:
 ```json
 {
     "kafka_settings": {
         "kafka-producer": {
-            "bootstrap.servers": "localhost:9092",
+            "brokers": "localhost:9092",
             "username": "",
-            "password": "",
-            "security.protocol": "PLAINTEXT"
+            "password": ""
+        },
+        "kafka-consumer-profile-updater": {
+            "brokers": "localhost:9092",
+            "username": "",
+            "password": ""
+        },
+        "kafka-consumer-ml-updater": {
+            "brokers": "localhost:9092",
+            "username": "",
+            "password": ""
         }
     }
 }
+
 ```
 6) Путь до этого файла указать в default-secdist-provider:config
 7) Запустить http-server
@@ -75,7 +71,7 @@ cd ~/CompareTaxi
 ```
 9) Можно проверить и отправить курл запрос:
 ```
-curl -X POST -i --data '{"topic": "test-topic", "key": "key", "payload": "my message"}' localhost:8080/set-price-info
+curl -X GET -i --data @request_sample/get_config.json localhost:8080/get-config
 ```
 9) Потом можно пойти в логи и увидеть, что все хорошо
 
