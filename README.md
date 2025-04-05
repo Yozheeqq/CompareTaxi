@@ -60,20 +60,21 @@ can also be `debug-custom`, `release-custom`.
 
 ```
 6) Путь до этого файла указать в default-secdist-provider:config
-7) Запустить http-server
+7) Добавить файл с моделькой в models/model.onnx
+8) Запустить http-server
 ```sh
 cd ~/CompareTaxi
 ./build-release/http_server -c configs/http_server/static_config.yaml --config_vars configs/common/config_vars.yaml
 ```
-8) Запустить ноды
+9) Запустить ноды
 ```sh
 ./build-release/node -c configs/nodes/static_config.yaml --config_vars configs/common/config_vars.yaml
 ```
-9) Можно проверить и отправить курл запрос:
+10) Можно проверить и отправить курл запрос:
 ```
 curl -X GET -i --data @request_sample/get_config.json localhost:8080/get-config
 ```
-9) Потом можно пойти в логи и увидеть, что все хорошо
+11) Потом можно пойти в логи и увидеть, что все хорошо
 
 ## License
 

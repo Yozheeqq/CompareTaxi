@@ -5,7 +5,8 @@ DEPS_FILE="https://raw.githubusercontent.com/userver-framework/userver/refs/head
 sudo apt update && \
 sudo apt install --allow-downgrades -y $(wget -q -O - ${DEPS_FILE}) && \
 sudo apt install -y make cmake clang-format clang clang-tools lldb ninja-build \
-                   protobuf-compiler python3-protobuf python3 python3-dev python3-pip python3-venv
+                   protobuf-compiler python3-protobuf python3 python3-dev python3-pip python3-venv \
+                   postgresql-client
 
 echo "Downloading ONNX Runtime"
 VERSION=1.21.0
@@ -17,7 +18,12 @@ rm onnxruntime.tgz
 mv onnxruntime-linux-x64-$VERSION onnxruntime
 echo "ONNX runtime was downloaded and extracted"
 
-# Установка Kafka
+echo "Installing PostgreSQL SSL certificate..."
+mkdir -p ~/.postgresql && \
+wget "https://storage.yandexcloud.net/cloud-certs/CA.pem" --output-document ~/.postgresql/root.crt && \
+chmod 0600 ~/.postgresql/root.crt
+echo "PostgreSQL SSL certificate installed to ~/.postgresql/root.crt"
+
 echo "Installing Kafka..."
 wget -c https://dlcdn.apache.org/kafka/3.9.0/kafka_2.13-3.9.0.tgz -O kafka.tgz
 tar -xzf kafka.tgz
