@@ -11,6 +11,9 @@
 #include <userver/server/handlers/http_handler_base.hpp>
 #include <userver/server/handlers/http_handler_json_base.hpp>
 
+#include <userver/storages/postgres/cluster.hpp>
+#include <userver/storages/postgres/component.hpp>
+
 
 using namespace userver;
 
@@ -35,16 +38,25 @@ private:
     TModel Model;
 };
 
-class TGetUserInfoHandler final : public userver::server::handlers::HttpHandlerBase {
+class TGetUserInfoHandler final : public userver::server::handlers::HttpHandlerJsonBase {
 public:
     static constexpr std::string_view kName = "handler-get-user-info";
 
-    using HttpHandlerBase::HttpHandlerBase;
+    TGetUserInfoHandler(
+        const components::ComponentConfig& config,
+        const components::ComponentContext& context
+    ) : server::handlers::HttpHandlerJsonBase{config, context}
+      , pg_cluster_(context.FindComponent<userver::components::Postgres>("user-info-database").GetCluster())
+    { }
 
-    std::string HandleRequestThrow(
-        const userver::server::http::HttpRequest &request,
-        userver::server::request::RequestContext &
+    formats::json::Value HandleRequestJsonThrow(
+        const server::http::HttpRequest& request,
+        const formats::json::Value& requestJson,
+        server::request::RequestContext& context
     ) const override;
+
+private:
+    userver::storages::postgres::ClusterPtr pg_cluster_;
 };
 
 class TGetConfigHandler final : public userver::server::handlers::HttpHandlerJsonBase {

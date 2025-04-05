@@ -13,7 +13,10 @@
 
 #include <userver/ydb/component.hpp>
 
+#include <userver/storages/postgres/component.hpp>
+
 #include "profile_updater.h"
+#include "ml_updater.h"
 
 int main(int argc, char* argv[]) {
   auto component_list =
@@ -25,8 +28,12 @@ int main(int argc, char* argv[]) {
       .Append<userver::clients::dns::Component>()
       .Append<userver::server::handlers::TestsControl>()
       .Append<kafka::ConsumerComponent>("kafka-consumer-profile-updater")
-      .Append<taxi_compare::TConsumerHandler>()
-      .Append<ydb::YdbComponent>();
+      .Append<kafka::ConsumerComponent>("kafka-consumer-ml-updater")
+      .Append<taxi_compare::TProfileUpdaterHandler>()
+      .Append<taxi_compare::TMlUpdaterHandler>()
+      .Append<userver::components::TestsuiteSupport>()
+      .Append<userver::components::Postgres>("ml-info-database")
+      .Append<userver::components::Postgres>("user-info-database")
     ;
 
   return userver::utils::DaemonMain(argc, argv, component_list);

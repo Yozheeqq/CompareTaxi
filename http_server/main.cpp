@@ -10,6 +10,8 @@
 #include <userver/storages/secdist/component.hpp>
 #include <userver/storages/secdist/provider_component.hpp>
 
+#include <userver/storages/postgres/component.hpp>
+
 #include "handlers.h"
 
 int main(int argc, char* argv[]) {
@@ -27,6 +29,8 @@ int main(int argc, char* argv[]) {
       .Append<taxi_compare::TSetPriceInfoHandler>()
       .Append<taxi_compare::TSetUserInfoHandler>()
       .Append<kafka::ProducerComponent>("kafka-producer")
+      .Append<userver::components::TestsuiteSupport>()
+      .Append<userver::components::Postgres>("user-info-database")
     ;
 
   return userver::utils::DaemonMain(argc, argv, component_list);

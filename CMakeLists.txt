@@ -8,7 +8,7 @@ project(taxi_compare CXX)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(DownloadUserver)
 
-find_package(userver COMPONENTS core kafka QUIET)
+find_package(userver COMPONENTS core kafka postgresql QUIET)
 if(NOT userver_FOUND)
   # Tries TRY_DIR first, falls back to downloading userver from GitHub using CPM.
   download_userver(TRY_DIR third_party/userver)
@@ -32,11 +32,14 @@ add_library(${PROJECT_NAME}_objs OBJECT
     lib/model.h
     nodes/profile_updater.cpp
     nodes/profile_updater.h
+    nodes/ml_updater.h
+    nodes/ml_updater.cpp
 )
 target_include_directories(${PROJECT_NAME}_objs PUBLIC ${CMAKE_SOURCE_DIR}/lib)
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC
   userver::core
   userver::kafka
+  userver::postgresql
   userver-ydb
   onnxruntime
 )

@@ -23,11 +23,29 @@ formats::json::Value TGetPricePredictHandler::HandleRequestJsonThrow(
     return formats::json::MakeObject("Predict price", predict);
 };
 
-std::string TGetUserInfoHandler::HandleRequestThrow(
-    const userver::server::http::HttpRequest&,
-    userver::server::request::RequestContext&
+formats::json::Value TGetUserInfoHandler::HandleRequestJsonThrow(
+    [[maybe_unused]] const server::http::HttpRequest& request,
+    const formats::json::Value& requestJson,
+    [[maybe_unused]] server::request::RequestContext& context
 ) const {
-    return "10";
+    const auto phoneId = requestJson["phone_id"].As<TString>();
+    const auto phoneIdHash = static_cast<std::int64_t>(std::hash<std::string>{}(phoneId));
+    auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kMaster,
+        "SELECT * FROM \"user-info\" "
+        "WHERE phone_id = $1 ",
+        phoneIdHash
+    );
+
+    formats::json::ValueBuilder jsonResult;
+
+    for (const auto& row : result) {
+        formats::json::ValueBuilder item;
+        item["start_address"] = row["start_address"].As<std::string>();
+        item["end_address"] = row["end_address"].As<std::string>();
+        jsonResult.PushBack(item.ExtractValue());
+    }
+    return jsonResult.ExtractValue();
 };
 
 formats::json::Value TGetConfigHandler::HandleRequestJsonThrow(
@@ -63,7 +81,7 @@ TString TGetConfigHandler::GetFullConfigPath(const TString& type, const TString&
 TSetPriceInfoHandler::TSetPriceInfoHandler(
     const components::ComponentConfig& config,
     const components::ComponentContext& context
-) : ISetHandler(config, context, "price-info")
+) : ISetHandler(config, context, "ml-info")
 { }
 
 TSetUserInfoHandler::TSetUserInfoHandler(
