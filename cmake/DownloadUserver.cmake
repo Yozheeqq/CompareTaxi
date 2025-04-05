@@ -30,7 +30,6 @@ function(download_userver)
   endif()
 
   set(USERVER_FEATURE_KAFKA ON CACHE BOOL "Enable Kafka in userver")
-  set(USERVER_FEATURE_YDB ON CACHE BOOL "Enable YDB in userver")
   set(USERVER_FEATURE_GRPC ON CACHE BOOL "Enable Grpc in userver")
   set(USERVER_FEATURE_POSTGRESQL ON CACHE BOOL "Enable Postgres in userver")
   CPMAddPackage(
@@ -39,7 +38,6 @@ function(download_userver)
       VERSION ${ARG_VERSION}
       GIT_TAG ${ARG_GIT_TAG}
       OPTIONS "USERVER_FEATURE_KAFKA ON"
-      OPTIONS "USERVER_FEATURE_YDB ON"
       OPTIONS "USERVER_FEATURE_GRPC ON"
       OPTIONS "USERVER_FEATURE_POSTGRESQL ON"
       ${ARG_UNPARSED_ARGUMENTS}

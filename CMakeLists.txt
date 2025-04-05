@@ -40,7 +40,6 @@ target_link_libraries(${PROJECT_NAME}_objs PUBLIC
   userver::core
   userver::kafka
   userver::postgresql
-  userver-ydb
   onnxruntime
 )
 

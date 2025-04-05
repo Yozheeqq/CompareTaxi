@@ -5,8 +5,6 @@
 #include <userver/components/component_config.hpp>
 #include <userver/components/component_context.hpp>
 
-#include <userver/ydb/table.hpp>
-
 #include <iostream>
 
 namespace taxi_compare {
