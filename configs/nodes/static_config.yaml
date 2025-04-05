@@ -17,7 +17,8 @@ components_manager:
     default_task_processor: main-task-processor
 
     components:                       # Configuring components that were registered via component_list
-        consumer-handler:
+        profile-updater-handler:
+        ml-updater-handler:
 
         # /// [Kafka service sample - consumer static config]
         # yaml
@@ -25,6 +26,14 @@ components_manager:
             group_id: test-group         # Consumers group current consumer will join on start
             topics:                      # List of topics consumer starts to listen
               - user-info
+            auto_offset_reset: smallest  # Strategy for reading topics without committed offsets
+            max_batch_size: 5            # Number of messages consumers waits until user-callback is called
+            security_protocol: PLAINTEXT # Broker connection settings
+
+        kafka-consumer-ml-updater:  # Kafka consumer component name must start with kafka-consumer
+            group_id: test-group         # Consumers group current consumer will join on start
+            topics:                      # List of topics consumer starts to listen
+              - ml-info
             auto_offset_reset: smallest  # Strategy for reading topics without committed offsets
             max_batch_size: 5            # Number of messages consumers waits until user-callback is called
             security_protocol: PLAINTEXT # Broker connection settings
@@ -52,6 +61,9 @@ components_manager:
             # See userver "dynamic config" docs for what configs exist.
             defaults:
                 HTTP_CLIENT_CONNECTION_POOL_SIZE: 1000
+                POSTGRES_DEFAULT_COMMAND_CONTROL:
+                    network_timeout_ms: 750
+                    statement_timeout_ms: 500
 
         http-client:
             load-enabled: $is_testing
@@ -72,13 +84,13 @@ components_manager:
             throttling_enabled: false
             url_trailing_slash: strict-match
 
-        ydb:
-            operation-settings:
-                cancel-after: 10000ms
-                client-timeout: 11000ms
-                operation-timeout: 10000ms
-                retries: 3
-            databases:
-                compare-taxi:
-                    endpoint: grpcs://ydb.serverless.yandexcloud.net:2135
-                    database: /ru-central1/b1ga1h9drl5fbm4b57t7/etnh7u20t3d3stro1ppb
+        testsuite-support: {}
+        user-info-database:
+            dbconnection#env: PG_CONNECTION
+            blocking_task_processor: fs-task-processor
+            dns_resolver: async
+
+        ml-info-database:
+            dbconnection#env: PG_CONNECTION
+            blocking_task_processor: fs-task-processor
+            dns_resolver: async

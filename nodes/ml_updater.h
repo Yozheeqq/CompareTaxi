@@ -14,11 +14,11 @@ using namespace userver;
 
 namespace taxi_compare {
 
-class TProfileUpdaterHandler final : public components::ComponentBase {
+class TMlUpdaterHandler final : public components::ComponentBase {
 public:
-    static constexpr std::string_view kName{"profile-updater-handler"};
+    static constexpr std::string_view kName{"ml-updater-handler"};
 
-    TProfileUpdaterHandler(const components::ComponentConfig& config, const components::ComponentContext& context);
+    TMlUpdaterHandler(const components::ComponentConfig& config, const components::ComponentContext& context);
 
 private:
     void Consume(kafka::MessageBatchView messages) const;
