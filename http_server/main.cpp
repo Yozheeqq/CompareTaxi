@@ -12,6 +12,8 @@
 
 #include <userver/storages/postgres/component.hpp>
 
+#include <userver/server/handlers/server_monitor.hpp>
+
 #include "handlers.h"
 
 int main(int argc, char* argv[]) {
@@ -31,6 +33,7 @@ int main(int argc, char* argv[]) {
       .Append<kafka::ProducerComponent>("kafka-producer")
       .Append<userver::components::TestsuiteSupport>()
       .Append<userver::components::Postgres>("user-info-database")
+      .Append<server::handlers::ServerMonitor>("handler-server-monitor")
     ;
 
   return userver::utils::DaemonMain(argc, argv, component_list);

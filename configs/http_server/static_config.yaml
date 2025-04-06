@@ -48,6 +48,14 @@ components_manager:
                     network_timeout_ms: 750
                     statement_timeout_ms: 500
 
+        handler-server-monitor:  # Официальный компонент для метрик
+            task_processor: main-task-processor
+            path: "/metrics"      # Эндпоинт будет доступен по этому пути
+            method: GET
+            monitor-handler: false
+            format: prometheus
+
+
         testsuite-support: {}
         user-info-database:
             dbconnection#env: PG_CONNECTION
