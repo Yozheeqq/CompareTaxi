@@ -76,6 +76,11 @@ curl -X GET -i --data @request_sample/get_config.json localhost:8080/get-config
 ```
 11) Потом можно пойти в логи и увидеть, что все хорошо
 
+12) Для отправки метрик нужно перейти в папку `monitoring` и запустить в ней докер-файл
+```
+docker-compose up -d
+```
+
 ## License
 
 The original template is distributed under the [Apache-2.0 License](https://github.com/userver-framework/userver/blob/develop/LICENSE)
