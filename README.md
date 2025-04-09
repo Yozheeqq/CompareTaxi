@@ -72,13 +72,17 @@ cd ~/CompareTaxi
 ```
 10) Можно проверить и отправить курл запрос:
 ```
-curl -X GET -i --data @request_sample/get_config.json localhost:8080/get-config
+curl -X GET -i --data @requests_sample/get_config.json localhost:8080/get-config
 ```
 11) Потом можно пойти в логи и увидеть, что все хорошо
 
 12) Для отправки метрик нужно перейти в папку `monitoring` и запустить в ней докер-файл
 ```
-docker-compose up -d
+sudo docker-compose up -d
+```
+13) Далее нужно запустить кафку локально. Для этого надо перейти в папку `kafka` и запустить в ней докер файл
+```
+sudo docker-compose up -d
 ```
 
 ## License
