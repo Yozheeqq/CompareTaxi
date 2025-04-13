@@ -2,33 +2,31 @@
 
 #include "common_types.h"
 
-#include <cpu_provider_factory.h>
-#include <onnxruntime_cxx_api.h>
+#include <userver/components/component_config.hpp>
+#include <userver/components/component_context.hpp>
+
+#include <userver/clients/http/component.hpp>
+
+#include <userver/formats/json/inline.hpp>
+#include <userver/formats/json/value.hpp>
+
+using namespace userver;
 
 namespace taxi_compare {
 
 class TModel {
 public:
 
-    TModel(const TString& pathToModel);
+    TModel(const userver::components::ComponentContext& context);
 
-    ui64 GetPricePredict(const TTaxiInfo& priceInfo) const;
+    formats::json::Value GetPricePredict(const TTaxiInfo& priceInfo) const;
 
 private:
-
-    static Ort::Env& GetEnv() {
-        static Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "ONNXModel");
-        return env;
-    }
-
     std::vector<float> GetInputFeatures(const TTaxiInfo& priceInfo) const;
 
 private:
 
-    mutable Ort::Session Session;
-    mutable std::mutex SessionMutex;
-    std::vector<std::string> InputNames;
-    std::vector<std::string> OutputNames;
+    userver::clients::http::Client& HttpClient;
 };
 
 } // taxi_compare

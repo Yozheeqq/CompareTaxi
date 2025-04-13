@@ -8,16 +8,6 @@ sudo apt install -y make cmake clang-format clang clang-tools lldb ninja-build \
                    protobuf-compiler python3-protobuf python3 python3-dev python3-pip python3-venv \
                    postgresql-client
 
-echo "Downloading ONNX Runtime"
-VERSION=1.21.0
-URL="https://github.com/microsoft/onnxruntime/releases/download/v$VERSION/onnxruntime-linux-x64-$VERSION.tgz"
-wget -q --show-progress "$URL" -O onnxruntime.tgz
-
-tar -xzf onnxruntime.tgz
-rm onnxruntime.tgz
-mv onnxruntime-linux-x64-$VERSION onnxruntime
-echo "ONNX runtime was downloaded and extracted"
-
 echo "Installing PostgreSQL SSL certificate..."
 mkdir -p ~/.postgresql && \
 wget "https://storage.yandexcloud.net/cloud-certs/CA.pem" --output-document ~/.postgresql/root.crt && \

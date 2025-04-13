@@ -11,7 +11,7 @@ TGetPricePredictHandler::TGetPricePredictHandler(
     const components::ComponentConfig& config,
     const components::ComponentContext& context
 ) : server::handlers::HttpHandlerJsonBase{config, context}
-  , Model("models/model.onnx")
+  , Model(context)
 { }
 
 formats::json::Value TGetPricePredictHandler::HandleRequestJsonThrow(
@@ -19,8 +19,14 @@ formats::json::Value TGetPricePredictHandler::HandleRequestJsonThrow(
     [[maybe_unused]] const formats::json::Value& requestJson,
     [[maybe_unused]] server::request::RequestContext& context
 ) const {
-    const auto predict = Model.GetPricePredict(TTaxiInfo{});
-    return formats::json::MakeObject("Predict price", predict);
+    const auto& taxiInfo = ValidateJsonRequest<TTaxiInfo>(requestJson, ERequestType::Get);
+    if (taxiInfo.has_value()) {
+        // const auto predict = Model.GetPricePredict(taxiInfo.value());
+        return Model.GetPricePredict(taxiInfo.value());
+    } else {
+        request.SetResponseStatus(server::http::HttpStatus::kBadRequest);
+        return formats::json::MakeObject("Error", "Error while parsing request");
+    }
 };
 
 formats::json::Value TGetUserInfoHandler::HandleRequestJsonThrow(
@@ -53,20 +59,18 @@ formats::json::Value TGetConfigHandler::HandleRequestJsonThrow(
     const formats::json::Value& requestJson,
     [[maybe_unused]] server::request::RequestContext& context
 ) const {
-    const auto& errorMessage = ValidateJsonRequest<TParserInfo>(requestJson, ERequestType::Get);
-    if (errorMessage.empty()) {
-        const auto type = requestJson["type"].As<TString>();
-        const auto name = requestJson["name"].As<TString>();
+    const auto& parserInfo = ValidateJsonRequest<TParserInfo>(requestJson, ERequestType::Get);
+    if (parserInfo.has_value()) {
         try {
-            const auto jsonContent = userver::fs::blocking::ReadFileContents(GetFullConfigPath(type, name));
+            const auto jsonContent = userver::fs::blocking::ReadFileContents(GetFullConfigPath(parserInfo->Type, parserInfo->Name));
             return userver::formats::json::FromString(jsonContent);
         } catch (std::exception& e) {
             request.SetResponseStatus(server::http::HttpStatus::kBadRequest);
-            return formats::json::MakeObject("Error reading file", e.what());
+            return formats::json::MakeObject("Error", e.what());
         }
     } else {
         request.SetResponseStatus(server::http::HttpStatus::kBadRequest);
-        return formats::json::MakeObject("Error while parsing request", errorMessage);
+        return formats::json::MakeObject("Error", "Error while parsing request");
     }
 };
 

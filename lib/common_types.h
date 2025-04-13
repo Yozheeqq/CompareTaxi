@@ -42,6 +42,7 @@ struct TTaxiInfo {
     ui64 Timestamp;
     double Distance;
     ui64 Price;
+    ui64 EstimateDuration;
 };
 
 struct TParserInfo {
@@ -52,15 +53,15 @@ struct TParserInfo {
 EWeatherType StringToWeatherType(const std::string& weatherStr);
 
 template<typename T>
-TString ValidateStruct(const formats::json::Value& json, ERequestType type);
+T ValidateStruct(const formats::json::Value& json, ERequestType type);
 
 template<typename T>
-TString ValidateJsonRequest(const formats::json::Value& requestJson, ERequestType type) {
+std::optional<T> ValidateJsonRequest(const formats::json::Value& requestJson, ERequestType type) {
     try {
         return ValidateStruct<T>(requestJson, type);
     } catch (const std::exception& e) {
         LOG_ERROR() << "YOZHEEQ: Exc: " << e.what();
-        return e.what();
+        return {};
     }
 }
 
