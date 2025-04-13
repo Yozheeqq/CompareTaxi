@@ -30,6 +30,7 @@ add_library(${PROJECT_NAME}_objs OBJECT
     lib/kafka_helpers.cpp
     lib/model.cpp
     lib/model.h
+    lib/model_one_price.h
     nodes/profile_updater.cpp
     nodes/profile_updater.h
     nodes/ml_updater.h

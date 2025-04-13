@@ -96,8 +96,8 @@ public:
         const formats::json::Value& requestJson,
         [[maybe_unused]] server::request::RequestContext& context
     ) const override {
-        const auto& errorMessage = ValidateJsonRequest<TStructType>(requestJson, ERequestType::Post);
-        if (errorMessage.empty()) {
+        const auto& requestInfo = ValidateJsonRequest<TStructType>(requestJson, ERequestType::Post);
+        if (requestInfo.has_value()) {
             switch (Produce(requestJson, Producer, TopicName)) {
                 case SendStatus::kSuccess:
                     return formats::json::MakeObject("message", "Message send successfully");
@@ -110,7 +110,7 @@ public:
             }
         }
         request.SetResponseStatus(server::http::HttpStatus::kBadRequest);
-        return formats::json::MakeObject("error", errorMessage);
+        return formats::json::MakeObject("Error", "Error while parsing request");
     }
 
 protected:

@@ -15,19 +15,19 @@ EWeatherType StringToWeatherType(const std::string& weatherStr) {
 }
 
 template<>
-TString ValidateStruct<TUserInfo>(const formats::json::Value& json, ERequestType type) {
-    [[maybe_unused]] TUserInfo userInfo;
+TUserInfo ValidateStruct<TUserInfo>(const formats::json::Value& json, ERequestType type) {
+    TUserInfo userInfo;
     userInfo.PhoneId = json["phone_id"].As<TString>();
     if (type == ERequestType::Post) {
         userInfo.StartAddress = json["start_address"].As<TString>();
         userInfo.EndAddress = json["end_address"].As<TString>();
         userInfo.Timestamp = json["timestamp"].As<ui64>();
     }
-    return "";
+    return userInfo;
 }
 
 template<>
-TString ValidateStruct<TTaxiInfo>(const formats::json::Value& json, ERequestType type) {
+TTaxiInfo ValidateStruct<TTaxiInfo>(const formats::json::Value& json, ERequestType type) {
     [[maybe_unused]] TTaxiInfo taxiInfo;
     taxiInfo.StartPointX = json["start_point_x"].As<double>();
     taxiInfo.StartPointY = json["start_point_y"].As<double>();
@@ -35,18 +35,19 @@ TString ValidateStruct<TTaxiInfo>(const formats::json::Value& json, ERequestType
     taxiInfo.EndPointY = json["end_point_y"].As<double>();
     taxiInfo.Timestamp = json["timestamp"].As<ui64>();
     taxiInfo.Distance = json["distance"].As<double>();
+    taxiInfo.EstimateDuration = json["duration"].As<ui64>();
     if (type == ERequestType::Post) {
         taxiInfo.Price = json["price"].As<ui64>();
     }
-    return "";
+    return taxiInfo;
 }
 
 template<>
-TString ValidateStruct<TParserInfo>(const formats::json::Value& json, [[maybe_unused]] ERequestType type) {
-    [[maybe_unused]] TParserInfo parserInfo;
+TParserInfo ValidateStruct<TParserInfo>(const formats::json::Value& json, [[maybe_unused]] ERequestType type) {
+    TParserInfo parserInfo;
     parserInfo.Type = json["type"].As<TString>();
     parserInfo.Name = json["name"].As<TString>();
-    return "";
+    return parserInfo;
 }
 
 } // taxi_compare

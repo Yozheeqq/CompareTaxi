@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common_types.h"
+#include "model_one_price.h"
 
 #include <cpu_provider_factory.h>
 #include <onnxruntime_cxx_api.h>
