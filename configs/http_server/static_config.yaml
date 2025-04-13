@@ -55,6 +55,11 @@ components_manager:
             monitor-handler: false
             format: prometheus
 
+        http-client:
+            pool-statistics-disable: false
+            thread-name-prefix: http-client
+            threads: 2
+            fs-task-processor: fs-task-processor
 
         testsuite-support: {}
         user-info-database:

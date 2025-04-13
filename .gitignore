@@ -15,4 +15,8 @@ Testing/
 Makefile.local
 CMakeUserPresets.json
 onnxruntime*/
-models/
+venv/
+*.pyc
+*.log
+*.onnx
+token.txt

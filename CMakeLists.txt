@@ -16,10 +16,6 @@ endif()
 
 userver_setup_environment()
 
-set(ONNXRUNTIME_ROOT "${CMAKE_SOURCE_DIR}/onnxruntime")
-include_directories(${ONNXRUNTIME_ROOT}/include)
-link_directories(${ONNXRUNTIME_ROOT}/lib)
-
 # Common sources
 add_library(${PROJECT_NAME}_objs OBJECT
     http_server/handlers.cpp
@@ -30,7 +26,6 @@ add_library(${PROJECT_NAME}_objs OBJECT
     lib/kafka_helpers.cpp
     lib/model.cpp
     lib/model.h
-    lib/model_one_price.h
     nodes/profile_updater.cpp
     nodes/profile_updater.h
     nodes/ml_updater.h
@@ -41,7 +36,6 @@ target_link_libraries(${PROJECT_NAME}_objs PUBLIC
   userver::core
   userver::kafka
   userver::postgresql
-  onnxruntime
 )
 
 # The Service

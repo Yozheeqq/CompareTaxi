@@ -3,8 +3,8 @@
 #include "kafka_helpers.h"
 #include "model.h"
 
-#include <userver/components/component_config.hpp>
-#include <userver/components/component_context.hpp>
+// #include <userver/components/component_config.hpp>
+// #include <userver/components/component_context.hpp>
 
 #include <userver/kafka/producer_component.hpp>
 

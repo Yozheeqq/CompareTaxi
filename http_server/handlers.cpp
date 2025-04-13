@@ -11,7 +11,7 @@ TGetPricePredictHandler::TGetPricePredictHandler(
     const components::ComponentConfig& config,
     const components::ComponentContext& context
 ) : server::handlers::HttpHandlerJsonBase{config, context}
-  , Model("models/model_one_price.onnx")
+  , Model(context)
 { }
 
 formats::json::Value TGetPricePredictHandler::HandleRequestJsonThrow(
@@ -19,10 +19,10 @@ formats::json::Value TGetPricePredictHandler::HandleRequestJsonThrow(
     [[maybe_unused]] const formats::json::Value& requestJson,
     [[maybe_unused]] server::request::RequestContext& context
 ) const {
-    const auto& taxiInfo = ValidateJsonRequest<TTaxiInfo>(requestJson, ERequestType::Post);
+    const auto& taxiInfo = ValidateJsonRequest<TTaxiInfo>(requestJson, ERequestType::Get);
     if (taxiInfo.has_value()) {
-        const auto predict = Model.GetPricePredict(taxiInfo.value());
-        return formats::json::MakeObject("Predict price", predict);
+        // const auto predict = Model.GetPricePredict(taxiInfo.value());
+        return Model.GetPricePredict(taxiInfo.value());
     } else {
         request.SetResponseStatus(server::http::HttpStatus::kBadRequest);
         return formats::json::MakeObject("Error", "Error while parsing request");

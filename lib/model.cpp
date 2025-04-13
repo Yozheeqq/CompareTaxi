@@ -5,6 +5,11 @@
 
 #include <userver/logging/log.hpp>
 
+#include <userver/formats/json/value_builder.hpp>
+#include <userver/clients/http/client.hpp>
+#include <userver/formats/serialize/common_containers.hpp>
+#include <userver/formats/json/serialize.hpp>
+
 namespace taxi_compare {
 
 namespace {
@@ -59,28 +64,9 @@ namespace {
 }
 
 TModel::TModel(
-    const TString& pathToModel
-) : Session(GetEnv(), pathToModel.c_str(), Ort::SessionOptions{})
-{
-    LOG_INFO() << "Initializing model";
-    Ort::AllocatorWithDefaultOptions allocator;
-
-    const auto numInputs = Session.GetInputCount();
-    InputNames.reserve(numInputs);
-    for (size_t i = 0; i < numInputs; ++i) {
-        auto name = Session.GetInputNameAllocated(i, allocator);
-        InputNames.push_back(name.get());
-    }
-
-    auto numOutputs = Session.GetOutputCount();
-    OutputNames.reserve(numOutputs);
-    for (size_t i = 0; i < numOutputs; ++i) {
-        auto name = Session.GetOutputNameAllocated(i, allocator);
-        OutputNames.push_back(name.get());
-    }
-
-    LOG_INFO() << "Model loaded with " << numInputs << " inputs and " << numOutputs << " outputs";
-}
+    const components::ComponentContext& context
+)   : HttpClient(context.FindComponent<components::HttpClient>().GetHttpClient())
+{ }
 
 
 // ['distance', 'dstLat', 'dstLon', 'order_duration_sec',
@@ -109,45 +95,32 @@ std::vector<float> TModel::GetInputFeatures(const TTaxiInfo& priceInfo) const {
     };
 }
 
-ui64 TModel::GetPricePredict(const TTaxiInfo& priceInfo) const {
-    std::lock_guard<std::mutex> lock(SessionMutex);
-
-    auto inputFeatures = GetInputFeatures(priceInfo);
-    std::vector<int64_t> inputShape = {1, static_cast<int64_t>(inputFeatures.size())};
-
-    Ort::MemoryInfo memory_info = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeCPU);
-    Ort::Value inputTensor = Ort::Value::CreateTensor<float>(
-        memory_info,
-        inputFeatures.data(),
-        inputFeatures.size(),
-        inputShape.data(),
-        inputShape.size()
-    );
-
-    std::vector<const char*> inputNamesC;
-    inputNamesC.reserve(InputNames.size());
-    for (const auto& name : InputNames) {
-        inputNamesC.push_back(name.c_str());
+formats::json::Value TModel::GetPricePredict(const TTaxiInfo& priceInfo) const {
+    formats::json::ValueBuilder jsonBuilder;
+    formats::json::ValueBuilder featuresArrayBuilder;
+    for (auto i = 1; i <= 12; ++i) {
+        auto nextPriceInfo = priceInfo;
+        nextPriceInfo.Timestamp += i * 60 * 5;
+        auto inputFeatures = GetInputFeatures(nextPriceInfo);
+        formats::json::ValueBuilder featureBuilder;
+        for (auto feature : inputFeatures) {
+            featureBuilder.PushBack(feature);
+        }
+        featuresArrayBuilder.PushBack(featureBuilder.ExtractValue());
     }
+    jsonBuilder["features"] = featuresArrayBuilder.ExtractValue();
+    std::string jsonStr = formats::json::ToString(jsonBuilder.ExtractValue());
 
-    std::vector<const char*> outputNamesC;
-    outputNamesC.reserve(OutputNames.size());
-    for (const auto& name : OutputNames) {
-        outputNamesC.push_back(name.c_str());
-    }
+    auto response = HttpClient
+        .CreateRequest()
+        .url("http://localhost:5000/predict")
+        .post()
+        .headers({{"Content-Type", "application/json"}})
+        .data(jsonStr)
+        .perform()
+    ;
 
-    auto outputTensors = Session.Run(
-        Ort::RunOptions{nullptr},
-        inputNamesC.data(),
-        &inputTensor,
-        inputNamesC.size(),
-        outputNamesC.data(),
-        outputNamesC.size()
-    );
-
-    float* outputData = outputTensors.front().GetTensorMutableData<float>();
-
-    return static_cast<ui64>(std::round(outputData[0]));
+    return formats::json::FromString(response->body());
 }
 
 } // taxi_compare
