@@ -46,7 +46,9 @@ template<>
 TParserInfo ValidateStruct<TParserInfo>(const formats::json::Value& json, [[maybe_unused]] ERequestType type) {
     TParserInfo parserInfo;
     parserInfo.Type = json["type"].As<TString>();
-    parserInfo.Name = json["name"].As<TString>();
+    if (json.HasMember("name")) {
+        parserInfo.Name = json["name"].As<TString>();
+    }
     return parserInfo;
 }
 

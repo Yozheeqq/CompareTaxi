@@ -77,6 +77,8 @@ public:
 
     TString GetCurrentDirPath() const;
     TString GetFullConfigPath(const TString& type, const TString& name) const;
+    TString GetTypeDirPath(const TString& type) const;
+    std::vector<TString> GetFilesInDirectory(const TString& dirPath) const;
 };
 
 template <typename TStructType>
