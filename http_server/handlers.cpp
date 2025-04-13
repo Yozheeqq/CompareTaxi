@@ -36,10 +36,26 @@ formats::json::Value TGetUserInfoHandler::HandleRequestJsonThrow(
 ) const {
     const auto phoneId = requestJson["phone_id"].As<TString>();
     const auto phoneIdHash = static_cast<std::int64_t>(std::hash<std::string>{}(phoneId));
+    const auto query = R"(
+        WITH ranked_rows AS (
+            SELECT
+                phone_id,
+                "timestamp",
+                start_address,
+                end_address,
+                ROW_NUMBER() OVER (PARTITION BY start_address, end_address ORDER BY timestamp DESC) AS row_num
+            FROM "user-info"
+            WHERE phone_id = $1
+        )
+        SELECT phone_id, timestamp, start_address, end_address
+        FROM ranked_rows
+        WHERE row_num = 1
+        ORDER BY timestamp DESC
+        LIMIT 5;
+    )";
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster,
-        "SELECT * FROM \"user-info\" "
-        "WHERE phone_id = $1 ",
+        query,
         phoneIdHash
     );
 
@@ -62,8 +78,19 @@ formats::json::Value TGetConfigHandler::HandleRequestJsonThrow(
     const auto& parserInfo = ValidateJsonRequest<TParserInfo>(requestJson, ERequestType::Get);
     if (parserInfo.has_value()) {
         try {
-            const auto jsonContent = userver::fs::blocking::ReadFileContents(GetFullConfigPath(parserInfo->Type, parserInfo->Name));
-            return userver::formats::json::FromString(jsonContent);
+            if (parserInfo->Name.empty()) {
+                const auto parsers = GetFilesInDirectory(GetTypeDirPath(parserInfo->Type));
+                formats::json::ValueBuilder jsonBuilder;
+                for (const auto& parser : parsers) {
+                    jsonBuilder.PushBack(
+                        userver::formats::json::FromString(userver::fs::blocking::ReadFileContents(parser))
+                    );
+                }
+                return jsonBuilder.ExtractValue();
+            } else {
+                const auto jsonContent = userver::fs::blocking::ReadFileContents(GetFullConfigPath(parserInfo->Type, parserInfo->Name));
+                return userver::formats::json::FromString(jsonContent);
+            }
         } catch (std::exception& e) {
             request.SetResponseStatus(server::http::HttpStatus::kBadRequest);
             return formats::json::MakeObject("Error", e.what());
@@ -77,9 +104,36 @@ formats::json::Value TGetConfigHandler::HandleRequestJsonThrow(
 TString TGetConfigHandler::GetCurrentDirPath() const {
     return std::filesystem::current_path().string();
 }
-TString TGetConfigHandler::GetFullConfigPath(const TString& type, const TString& name) const {
+TString TGetConfigHandler::GetTypeDirPath(const TString& type) const {
     const auto& dirPath = GetCurrentDirPath();
-    return (std::filesystem::path(dirPath) / "configs" / "parsers" / type / (name + ".json")).string();
+    return (std::filesystem::path(dirPath) / "configs" / "parsers" / type).string();
+}
+TString TGetConfigHandler::GetFullConfigPath(const TString& type, const TString& name) const {
+    return GetTypeDirPath(type) + name + ".json";
+}
+
+std::vector<TString> TGetConfigHandler::GetFilesInDirectory(const TString& dirPath) const {
+    std::vector<TString> files;
+
+    try {
+        if (!std::filesystem::exists(dirPath) || !std::filesystem::is_directory(dirPath)) {
+            LOG_ERROR() << dirPath << " does not exist";
+            return files;
+        }
+        if (!std::filesystem::is_directory(dirPath)) {
+            LOG_ERROR() << dirPath << " is not a directory";
+            return files;
+        }
+
+        for (const auto& entry : std::filesystem::directory_iterator(dirPath)) {
+            if (entry.is_regular_file()) {
+                files.push_back(dirPath + "/" + entry.path().filename().string());
+            }
+        }
+    } catch (const std::filesystem::filesystem_error& e) {
+        LOG_ERROR() << "File system error: " << e.what() << '\n';
+    }
+    return files;
 }
 
 TSetPriceInfoHandler::TSetPriceInfoHandler(
