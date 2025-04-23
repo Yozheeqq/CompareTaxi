@@ -1,0 +1,83 @@
+{
+    "name": "taxovichkof",
+    "url": "https://api.gruzovichkof.ru/3/calculator/prices?v=2",
+    "body": {
+        "loc": [
+            {
+                "lat":"{{departure_x}}",
+                "lng":"{{departure_y}}"
+            },
+            {
+                "lat":"{{arrival_x}",
+                "lng":"{{arrival_y}}"
+            }
+        ],
+        "paymentType": 0,
+        "date":"{{timestamp}}",
+        "ordertime":618,
+        "carOptions": {
+            "car_id":"{{tariff}}",
+            "passengers":0,
+            "porters":null
+        },
+        "options":[]
+    },
+    "headers": [
+        {
+            "name": "accept",
+            "value": "application/json, text/plain, */*"
+        },
+        {
+            "name": "accept-language",
+            "value": "ru,en;q=0.9"
+        },
+        {
+            "name": "api-key",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbklkIjo1NiwiYmFzZVVybCI6Imh0dHBzOi8vYXBpLmdydXpvdmljaGtvZi5ydSJ9.hIKxaVXdJRGAkL42vCKJSaBoQ_m6xGkChHJh-7id9DQ"
+        },
+        {
+            "name": "content-type",
+            "value": "application/json"
+        },
+        {
+            "name": "origin",
+            "value": "https://msk.taxovichkof.ru"
+        },
+        {
+            "name": "priority",
+            "value": "u=1, i"
+        },
+        {
+            "name": "referer",
+            "value": "https://msk.taxovichkof.ru/"
+        },
+        {
+            "name": "sec-ch-ua",
+            "value": "\"Chromium\";v=\"128\", \"Not;A=Brand\";v=\"24\", \"YaBrowser\";v=\"24.10\", \"Yowser\";v=\"2.5\""
+        },
+        {
+            "name": "sec-ch-ua-mobile",
+            "value": "?0"
+        },
+        {
+            "name": "sec-ch-ua-platform",
+            "value": "macOS"
+        },
+        {
+            "name": "sec-fetch-dest",
+            "value": "empty"
+        },
+        {
+            "name": "sec-fetch-mode",
+            "value": "cors"
+        },
+        {
+            "name": "sec-fetch-site",
+            "value": "cross-site"
+        },
+        {
+            "name": "user-agent",
+            "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 YaBrowser/24.10.0.0 Safari/537.36"
+        }
+    ]
+}
