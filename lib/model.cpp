@@ -12,6 +12,12 @@
 
 namespace taxi_compare {
 
+struct TWeatherInfo {
+    double Temp;
+    double WindSpeed;
+    double RainVolume;
+};
+
 namespace {
     ui64 GetMinuteOfHour(time_t timestamp) {
         struct tm *timeinfo = localtime(&timestamp);
@@ -61,6 +67,20 @@ namespace {
         static const double centerLat = 55.752871, centerLon = 37.618093;
         return HaversineDistance(srcLat, srcLon, centerLat, centerLon);
     }
+
+    TWeatherInfo GetWeatherInfo(double srcLat, double srcLon, time_t timestamp) {
+        const auto& response = userver::GetAsyncRequest(
+            "https://api.meteostat.net/v2/point/hourly",
+            "lat", srcLat,
+            "lon", srcLon,
+            "start", timestamp
+        );
+        return TWeatherInfo{
+            .Temp = response.GetArg("temp"),
+            .WindSpeed = response.GetArg("wind"),
+            .RainVolume = response.GetArg("rnvl"),
+        };
+    }
 }
 
 TModel::TModel(
@@ -75,6 +95,7 @@ TModel::TModel(
 //     'haversine_distance', 'src_to_center', 'dst_to_center', 'is_night']
 
 std::vector<float> TModel::GetInputFeatures(const TTaxiInfo& priceInfo) const {
+    const auto weatherInfo = GetWeatherInfo(priceInfo.StartPointY, priceInfo.StartPointX, priceInfo.Timestamp);
     return std::vector<float>{
         static_cast<float>(priceInfo.Distance),
         static_cast<float>(priceInfo.EndPointY),
@@ -91,7 +112,10 @@ std::vector<float> TModel::GetInputFeatures(const TTaxiInfo& priceInfo) const {
         static_cast<float>(HaversineDistance(priceInfo.StartPointY, priceInfo.StartPointX, priceInfo.EndPointY, priceInfo.EndPointX)),
         static_cast<float>(DistanceToCenter(priceInfo.StartPointY, priceInfo.StartPointX)),
         static_cast<float>(DistanceToCenter(priceInfo.EndPointY, priceInfo.EndPointX)),
-        static_cast<float>(IsNight(priceInfo.Timestamp))
+        static_cast<float>(IsNight(priceInfo.Timestamp)),
+        static_cast<float>(weatherInfo.Temp),
+        static_cast<float>(weatherInfo.WindSpeed),
+        static_cast<float>(weatherInfo.RainVolume),
     };
 }
 
